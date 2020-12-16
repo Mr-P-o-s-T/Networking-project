@@ -1,4 +1,4 @@
-package com.popovych.networking.serverdatabase.clienthandler.args;
+package com.popovych.networking.serverdatabase.serverhandler.args;
 
 import com.popovych.networking.interfaces.ServerDatabase;
 import com.popovych.networking.serverdatabase.DatabaseWorkerThreadArguments;
@@ -6,11 +6,11 @@ import com.popovych.networking.serverdatabase.enumerations.DatabaseWorkerThreadT
 
 import java.net.ServerSocket;
 
-public class DatabaseClientsHandlerArguments extends DatabaseWorkerThreadArguments {
+public class DatabaseServersHandlerThreadArguments extends DatabaseWorkerThreadArguments {
     private enum ArgsType {
         THREAD_TYPE(0),
         SERVER_DATABASE(THREAD_TYPE),
-        CLIENTS_SOCKET(SERVER_DATABASE);
+        SERVERS_SOCKET(THREAD_TYPE);
 
         private final int index;
         private final int autoinc;
@@ -33,17 +33,17 @@ public class DatabaseClientsHandlerArguments extends DatabaseWorkerThreadArgumen
         }
     }
 
-    public DatabaseClientsHandlerArguments(ServerDatabase database, ServerSocket clientsSocket) {
+    public DatabaseServersHandlerThreadArguments(ServerDatabase serverDatabase, ServerSocket serversSocket) {
         super(DatabaseWorkerThreadType.CLIENTS_HANDLER);
-        args.add(database);
-        args.add(clientsSocket);
+        args.add(serverDatabase);
+        args.add(serversSocket);
+    }
+
+    public ServerSocket getServersSocket() {
+        return (ServerSocket) args.get(ArgsType.SERVERS_SOCKET.getIndex());
     }
 
     public ServerDatabase getServerDatabase() {
         return (ServerDatabase) args.get(ArgsType.SERVER_DATABASE.getIndex());
-    }
-
-    public ServerSocket getClientsSocket() {
-        return (ServerSocket) args.get(ArgsType.CLIENTS_SOCKET.getIndex());
     }
 }

@@ -4,5 +4,5 @@ public enum ServerWorkerThreadType {
     GAME,
     CLIENTS_HANDLER,
     CLIENT_TRANSMITTER,
-    SERVER_UNCOVER
+    SERVER_COVER, SERVER_UNCOVER
 }

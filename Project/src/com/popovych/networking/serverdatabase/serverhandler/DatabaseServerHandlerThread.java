@@ -3,31 +3,30 @@ package com.popovych.networking.serverdatabase.serverhandler;
 import com.popovych.networking.abstracts.threads.ThreadGroupWorker;
 import com.popovych.networking.enumerations.MessageType;
 import com.popovych.networking.interfaces.ServerDatabase;
-import com.popovych.networking.messages.ServerDatabaseQueryMessage;
-import com.popovych.networking.messages.ServerDatabaseResponseMessage;
-import com.popovych.networking.serverdatabase.serverhandler.args.ServerHandlerArguments;
+import com.popovych.networking.messages.ServerDatabaseInsertQueryMessage;
+import com.popovych.networking.serverdatabase.serverhandler.args.DatabaseServerHandlerThreadArguments;
 import com.popovych.networking.statics.Naming;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.Socket;
 
-public class DatabaseServerHandlerArguments extends ThreadGroupWorker {
+public class DatabaseServerHandlerThread extends ThreadGroupWorker {
     protected Socket serverHandlerSocket;
     protected ServerDatabase serverDatabase;
 
-    public DatabaseServerHandlerArguments(ThreadGroup group, ServerHandlerArguments args) {
+    public DatabaseServerHandlerThread(ThreadGroup group, DatabaseServerHandlerThreadArguments args) {
         super(Naming.Templates.databaseThread, Naming.Descriptions.serverHandlerThread, group);
         serverDatabase = args.getServerDatabase();
         serverHandlerSocket = args.getClientHandlerSocket();
     }
 
-    protected ServerDatabaseQueryMessage getServerQuery() {
+    protected ServerDatabaseInsertQueryMessage getServerQuery() {
         ObjectInputStream in = null;
-        ServerDatabaseQueryMessage message = null;
+        ServerDatabaseInsertQueryMessage message = null;
         try {
             in = new ObjectInputStream(serverHandlerSocket.getInputStream());
-            message = (ServerDatabaseQueryMessage) in.readObject();
+            message = (ServerDatabaseInsertQueryMessage) in.readObject();
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
             interrupt();
@@ -43,10 +42,13 @@ public class DatabaseServerHandlerArguments extends ThreadGroupWorker {
 
     @Override
     protected void runTask() {
-        ServerDatabaseQueryMessage message = getServerQuery();
+        ServerDatabaseInsertQueryMessage query = getServerQuery();
 
-        if (message.getType() == MessageType.SERVER_INSERT_QUERY) {
-            serverDatabase.saveNewAvailableServerData(message.getSData());
+        if (query.getType() == MessageType.SERVER_INSERT_QUERY) {
+            serverDatabase.saveNewAvailableServerData(query.getSData());
+        }
+        else {
+            serverDatabase.deleteAvailableServerData(query.getSData());
         }
 
         interrupt();

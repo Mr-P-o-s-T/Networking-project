@@ -5,7 +5,7 @@ import com.popovych.networking.data.ServerDatabaseData;
 import com.popovych.networking.client.enumerations.ClientWorkerThreadType;
 import com.popovych.networking.client.ClientWorkerThreadArguments;
 
-public class ClientServerSearcherArguments extends ClientWorkerThreadArguments {
+public class ClientServerSearcherThreadArguments extends ClientWorkerThreadArguments {
     private enum ArgsType {
         THREAD_TYPE(0),
         CLIENT_DATA(THREAD_TYPE),
@@ -32,7 +32,7 @@ public class ClientServerSearcherArguments extends ClientWorkerThreadArguments {
         }
     }
 
-    public ClientServerSearcherArguments(ClientData cData, ServerDatabaseData sdbData) {
+    public ClientServerSearcherThreadArguments(ClientData cData, ServerDatabaseData sdbData) {
         super(ClientWorkerThreadType.SERVER_SEARCHER);
         args.add(cData);
         args.add(sdbData);

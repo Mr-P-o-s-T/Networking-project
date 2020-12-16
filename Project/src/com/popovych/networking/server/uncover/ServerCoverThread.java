@@ -4,9 +4,9 @@ import com.popovych.networking.abstracts.threads.ThreadGroupWorker;
 import com.popovych.networking.data.ServerData;
 import com.popovych.networking.data.ServerDatabaseData;
 import com.popovych.networking.interfaces.DatabaseControllerExecutor;
-import com.popovych.networking.messages.ServerDatabaseInsertQueryMessage;
+import com.popovych.networking.messages.ServerDatabaseDeleteQueryMessage;
 import com.popovych.networking.messages.ServerDatabaseQueryMessage;
-import com.popovych.networking.server.uncover.args.ServerUncoverThreadArguments;
+import com.popovych.networking.server.uncover.args.ServerCoverThreadArguments;
 import com.popovych.networking.statics.Naming;
 
 import java.io.IOException;
@@ -16,18 +16,18 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class ServerUncoverThread extends ThreadGroupWorker implements DatabaseControllerExecutor {
+public class ServerCoverThread extends ThreadGroupWorker implements DatabaseControllerExecutor {
     protected ServerData sData;
     protected ServerDatabaseData sdbData;
 
     protected Lock locker = new ReentrantLock();
     protected Condition serverUpdateInfoCondition = null;
-    protected boolean uncoverNewServer = true;
+    protected boolean coverNewServer = true;
 
     protected Socket serverDBSocket;
 
-    public ServerUncoverThread(ThreadGroup group, ServerUncoverThreadArguments args) {
-        super(Naming.Templates.serverThread, Naming.Descriptions.serverUncoverThread, group);
+    public ServerCoverThread(ThreadGroup group, ServerCoverThreadArguments args) {
+        super(Naming.Templates.serverThread, Naming.Descriptions.serverCoverThread, group);
         this.sData = args.getServerData();
         this.sdbData = args.getServerDatabaseData();
     }
@@ -54,7 +54,7 @@ public class ServerUncoverThread extends ThreadGroupWorker implements DatabaseCo
 
     @Override
     protected void runTask() {
-        sendServerQuery(new ServerDatabaseInsertQueryMessage(sData));
+        sendServerQuery(new ServerDatabaseDeleteQueryMessage(sData));
 
         interrupt();
     }
@@ -70,12 +70,7 @@ public class ServerUncoverThread extends ThreadGroupWorker implements DatabaseCo
 
     @Override
     public boolean databaseActionExecutionNow() {
-        return uncoverNewServer;
-    }
-
-    @Override
-    public void completeDatabaseAction() {
-        uncoverNewServer = false;
+        return coverNewServer;
     }
 
     @Override
@@ -89,5 +84,10 @@ public class ServerUncoverThread extends ThreadGroupWorker implements DatabaseCo
             serverUpdateInfoCondition = locker.newCondition();
         }
         return serverUpdateInfoCondition;
+    }
+
+    @Override
+    public void completeDatabaseAction() {
+        coverNewServer = false;
     }
 }

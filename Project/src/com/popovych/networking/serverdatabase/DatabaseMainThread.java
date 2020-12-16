@@ -6,12 +6,12 @@ import com.popovych.networking.data.ServerData;
 import com.popovych.networking.data.ServerDatabaseResponseData;
 import com.popovych.networking.interfaces.args.Arguments;
 import com.popovych.networking.interfaces.ServerDatabase;
-import com.popovych.networking.serverdatabase.clienthandler.DatabaseClientsHandler;
-import com.popovych.networking.serverdatabase.clienthandler.args.DatabaseClientsHandlerArguments;
+import com.popovych.networking.serverdatabase.clienthandler.DatabaseClientsHandlerThread;
+import com.popovych.networking.serverdatabase.clienthandler.args.DatabaseClientsHandlerThreadArguments;
 import com.popovych.networking.serverdatabase.enumerations.DatabaseWorkerThreadType;
-import com.popovych.networking.serverdatabase.serverhandler.DatabaseServerHandlerArguments;
-import com.popovych.networking.serverdatabase.serverhandler.args.ServerHandlerArguments;
-import com.popovych.networking.serverdatabase.serverhandler.args.ServersHandlerArguments;
+import com.popovych.networking.serverdatabase.serverhandler.DatabaseServerHandlerThread;
+import com.popovych.networking.serverdatabase.serverhandler.args.DatabaseServerHandlerThreadArguments;
+import com.popovych.networking.serverdatabase.serverhandler.args.DatabaseServersHandlerThreadArguments;
 import com.popovych.networking.statics.Naming;
 
 import java.io.IOException;
@@ -38,8 +38,8 @@ public class DatabaseMainThread extends ThreadGroupMaster implements ServerDatab
             interrupt();
         }
         try {
-            SpawnWorker(new DatabaseClientsHandlerArguments(this, clientsSocket));
-            SpawnWorker(new ServersHandlerArguments(this, serversSocket));
+            SpawnWorker(new DatabaseClientsHandlerThreadArguments(this, clientsSocket));
+            SpawnWorker(new DatabaseServersHandlerThreadArguments(this, serversSocket));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -60,10 +60,10 @@ public class DatabaseMainThread extends ThreadGroupMaster implements ServerDatab
         DatabaseWorkerThreadType newThreadType = ((DatabaseWorkerThreadArguments)workerArgs).getWorkerType();
 
         if (newThreadType == DatabaseWorkerThreadType.CLIENTS_HANDLER) {
-            return new DatabaseClientsHandler(group, (DatabaseClientsHandlerArguments) workerArgs);
+            return new DatabaseClientsHandlerThread(group, (DatabaseClientsHandlerThreadArguments) workerArgs);
         }
         else if (newThreadType == DatabaseWorkerThreadType.SERVERS_HANDLER) {
-            return new DatabaseServerHandlerArguments(group, (ServerHandlerArguments) workerArgs);
+            return new DatabaseServerHandlerThread(group, (DatabaseServerHandlerThreadArguments) workerArgs);
         }
         else {
             throw new Exception();
@@ -81,5 +81,10 @@ public class DatabaseMainThread extends ThreadGroupMaster implements ServerDatab
 
     public synchronized void saveNewAvailableServerData(ServerData sData) {
         sdrData.addAvailableServerData(sData);
+    }
+
+    @Override
+    public void deleteAvailableServerData(ServerData sData) {
+        sdrData.removeAvailableServerData(sData);
     }
 }

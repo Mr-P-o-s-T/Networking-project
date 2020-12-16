@@ -24,6 +24,7 @@ public class Naming {
 
         public static final String clientTransmitterThread = "Client transmitter thread";
         public static final String serverUncoverThread = "Server uncover thread";
+        public static final String serverCoverThread = "Server cover thread";
     }
     public static class Groups {
         public static final String client = "Client threads";

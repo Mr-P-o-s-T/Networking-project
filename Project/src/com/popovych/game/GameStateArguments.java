@@ -1,11 +1,12 @@
-package com.popovych.networking.server.game.args;
+package com.popovych.game;
 
-import com.popovych.networking.server.ServerWorkerThreadArguments;
-import com.popovych.networking.server.enumerations.ServerWorkerThreadType;
+import com.popovych.networking.abstracts.args.DefaultArgumentsImplementation;
 
-public class ServerGameArguments extends ServerWorkerThreadArguments {
+import java.util.ArrayList;
+
+public class GameStateArguments extends DefaultArgumentsImplementation {
     private enum ArgsType {
-        THREAD_TYPE(0);
+        ;
 
         private final int index;
         private final int autoinc;
@@ -27,7 +28,8 @@ public class ServerGameArguments extends ServerWorkerThreadArguments {
             return index;
         }
     }
-    public ServerGameArguments() {
-        super(ServerWorkerThreadType.GAME);
+
+    public GameStateArguments() {
+        super(new ArrayList<>());
     }
 }

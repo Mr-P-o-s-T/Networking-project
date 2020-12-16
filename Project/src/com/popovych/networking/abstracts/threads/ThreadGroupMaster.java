@@ -16,4 +16,20 @@ public abstract class ThreadGroupMaster extends NetRunnable implements WorkerSpa
         super.interrupt();
         group.interrupt();
     }
+
+    @Override
+    public void join() {
+        Thread[] threads = new Thread[group.activeCount()];
+        group.enumerate(threads);
+
+        for (Thread thread : threads) {
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        super.join();
+    }
 }

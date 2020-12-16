@@ -1,11 +1,11 @@
 package com.popovych.networking.client.search;
 
 import com.popovych.networking.abstracts.threads.ThreadGroupWorker;
-import com.popovych.networking.client.search.args.ClientServerSearcherArguments;
+import com.popovych.networking.client.search.args.ClientServerSearcherThreadArguments;
 import com.popovych.networking.data.ClientData;
 import com.popovych.networking.data.ServerDatabaseData;
 import com.popovych.networking.data.ServerDatabaseResponseData;
-import com.popovych.networking.interfaces.ServerSearchController;
+import com.popovych.networking.interfaces.DatabaseControllerExecutor;
 import com.popovych.networking.messages.ClientDatabaseQueryMessage;
 import com.popovych.networking.messages.ServerDatabaseResponseMessage;
 import com.popovych.networking.statics.Naming;
@@ -18,7 +18,7 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class ClientServerSearcher extends ThreadGroupWorker implements ServerSearchController {
+public class ClientServerSearcherThread extends ThreadGroupWorker implements DatabaseControllerExecutor {
     protected ClientDatabaseQueryMessage query;
     protected ClientData cData;
     protected ServerDatabaseData sdbData;
@@ -26,12 +26,11 @@ public class ClientServerSearcher extends ThreadGroupWorker implements ServerSea
 
     protected Lock locker = new ReentrantLock();
     protected Condition serverFoundCondition = null;
-    protected Condition serverSearchCondition = null;
-    protected boolean searchNewServer = true;
+    protected boolean searchingNewServer = true;
 
     protected Socket serverDBSocket;
 
-    public ClientServerSearcher(ThreadGroup group, ClientServerSearcherArguments args) {
+    public ClientServerSearcherThread(ThreadGroup group, ClientServerSearcherThreadArguments args) {
         super(Naming.Templates.clientThread, Naming.Descriptions.serverSearcherThread, group);
         this.cData = args.getClientData();
         this.sdbData = args.getServerDatabaseData();
@@ -66,7 +65,7 @@ public class ClientServerSearcher extends ThreadGroupWorker implements ServerSea
     @Override
     protected void prepareTask() {
         try {
-            serverDBSocket = new Socket(cData.getAddress(), cData.getPort());
+            serverDBSocket = new Socket(sdbData.getAddress(), sdbData.getPort());
         } catch (IOException e) {
             e.printStackTrace();
             interrupt();
@@ -79,18 +78,15 @@ public class ClientServerSearcher extends ThreadGroupWorker implements ServerSea
     protected void runTask() {
         locker.lock();
         try {
-            if (!searchingNewServerNow())
-                getServerSearchCondition().await();
             sendClientQuery(query);
 
             resData = receiveServerResponse().getSDRData();
 
-            newServerFound();
-            getServerFoundCondition().signalAll();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            completeDatabaseAction();
+            getDatabaseActionCompleteCondition().signalAll();
         } finally {
             locker.unlock();
+            interrupt();
         }
     }
 
@@ -103,32 +99,22 @@ public class ClientServerSearcher extends ThreadGroupWorker implements ServerSea
         }
     }
 
-    public Lock getServerSearchLocker() {
+    public Lock getDatabaseControllerLocker() {
         return locker;
     }
 
     @Override
-    public boolean searchingNewServerNow() {
-        return searchNewServer;
-    }
-
-    public void searchNewServer() {
-        this.searchNewServer = true;
+    public boolean databaseActionExecutionNow() {
+        return searchingNewServer;
     }
 
     @Override
-    public void newServerFound() {
-        this.searchNewServer = false;
+    public void completeDatabaseAction() {
+        this.searchingNewServer = false;
     }
 
-    public Condition getServerSearchCondition() {
-        if (serverSearchCondition == null) {
-            serverSearchCondition = locker.newCondition();
-        }
-        return serverSearchCondition;
-    }
-
-    synchronized public Condition getServerFoundCondition() {
+    @Override
+    synchronized public Condition getDatabaseActionCompleteCondition() {
         if (serverFoundCondition == null) {
             serverFoundCondition = locker.newCondition();
         }

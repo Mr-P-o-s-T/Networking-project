@@ -6,5 +6,6 @@ import com.popovych.networking.data.ServerDatabaseResponseData;
 public interface ServerDatabase {
 
     void saveNewAvailableServerData(ServerData sData);
+    void deleteAvailableServerData(ServerData sData);
     ServerDatabaseResponseData getSDRData();
 }

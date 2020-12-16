@@ -37,6 +37,16 @@ public abstract class NetRunnable implements Runnable {
         executor.interrupt();
     }
 
+    public void join() {
+        if (Thread.currentThread() != executor) {
+            try {
+                executor.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     protected static synchronized Indexer<Integer> getIndexer() {
         if (indexer == null) {
             return indexer = new Indexer<>() {

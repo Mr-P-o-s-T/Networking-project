@@ -5,7 +5,7 @@ import com.popovych.networking.enumerations.MessageType;
 import com.popovych.networking.interfaces.ServerDatabase;
 import com.popovych.networking.messages.ClientDatabaseQueryMessage;
 import com.popovych.networking.messages.ServerDatabaseResponseMessage;
-import com.popovych.networking.serverdatabase.clienthandler.args.DatabaseClientHandlerArguments;
+import com.popovych.networking.serverdatabase.clienthandler.args.DatabaseClientHandlerThreadArguments;
 import com.popovych.networking.statics.Naming;
 
 import java.io.IOException;
@@ -13,11 +13,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-public class DatabaseClientHandler extends ThreadGroupWorker {
+public class DatabaseClientHandlerThread extends ThreadGroupWorker {
     protected Socket clientHandlerSocket;
     protected ServerDatabase serverDatabase;
 
-    public DatabaseClientHandler(ThreadGroup group, DatabaseClientHandlerArguments args) {
+    public DatabaseClientHandlerThread(ThreadGroup group, DatabaseClientHandlerThreadArguments args) {
         super(Naming.Templates.databaseThread, Naming.Descriptions.clientHandlerThread, group);
         serverDatabase = args.getServerDatabase();
         clientHandlerSocket = args.getClientHandlerSocket();
