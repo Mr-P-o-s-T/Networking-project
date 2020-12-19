@@ -47,4 +47,12 @@ public class Naming {
         public static final int defaultDatabaseCPort = 1490;
         public static final int getDefaultDatabaseSPort = 1491;
     }
+
+    public static class FXMLData {
+        public static final String defaultFXMLResourcesPath = "game/ui/fxml/%s";
+        public static final String defaultStartScreenFilename = "StartScreen.fxml";
+        public static final String defaultServerPickScreenFilename = "ServerPickScreen.fxml";
+        public static final String defaultServerCreateScreenFilename = "ServerCreateScreen.fxml";
+        public static final String defaultGameScreenFilename = "GameScreen.fxml";
+    }
 }

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox alignment="CENTER" prefHeight="400" prefWidth="600" spacing="15.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.popovych.game.ui.controller.StartController">
+   <Label alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="300.0" text="The Game" textAlignment="CENTER" underline="true">
+      <font>
+         <Font size="36.0" />
+      </font>
+   </Label>
+    <Button fx:id="newServerBtn" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" onAction="#newServerAction" prefWidth="150.0" text="Start New Server" />
+    <Button fx:id="connectServerBtn" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onAction="#connectServerAction" prefWidth="150.0" text="Connect To Other Server" />
+    <Button fx:id="exitBtn" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onAction="#exitAction" prefWidth="150.0" text="Exit" />
+</VBox>
