@@ -34,6 +34,17 @@ public class Naming {
         public static final String serverHandler = "Server handler threads";
     }
     public static class Constants {
-        public static final int bufferSize = 1500;
+        public static final String broadcast = "broadcast";
+        public static final String localhost = "localhost";
+
+        public static final String defaultClientIP = localhost;
+        public static final String defaultServerIP = localhost;
+        public static final String defaultDatabaseIP = localhost;
+        public static final String defaultBroadcastIP = "255.255.255.255";
+
+        public static final int defaultClientPort = 1488;
+        public static final int defaultServerPort = 1489;
+        public static final int defaultDatabaseCPort = 1490;
+        public static final int getDefaultDatabaseSPort = 1491;
     }
 }

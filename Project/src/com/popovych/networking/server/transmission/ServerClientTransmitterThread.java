@@ -2,6 +2,7 @@ package com.popovych.networking.server.transmission;
 
 import com.popovych.networking.abstracts.threads.ThreadGroupWorker;
 import com.popovych.networking.data.ServerData;
+import com.popovych.networking.enumerations.MessageType;
 import com.popovych.networking.interfaces.message.Message;
 import com.popovych.networking.server.message.ServerMessageQueue;
 import com.popovych.networking.server.transmission.args.ServerClientTransmitterThreadArguments;
@@ -58,8 +59,14 @@ public class ServerClientTransmitterThread extends ThreadGroupWorker {
     protected void runTask() {
         Message message = receiveMessage();
 
+        if (message.getType() == MessageType.GAME_CLIENT_UNREGISTER)
+            interrupt();
+
         outputMessageQueue.postMessage(message);
         message = inputMessageQueue.getMessage();
+
+        if (message.getType() == MessageType.GAME_SERVER_STOP)
+            interrupt();
 
         sendMessage(message);
     }

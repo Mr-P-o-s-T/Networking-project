@@ -1,5 +1,8 @@
-package com.popovych.game;
+package com.popovych.game.args;
 
+import com.popovych.game.defaults.DefaultActorSpawner;
+import com.popovych.game.interfaces.ActorSpawner;
+import com.popovych.game.interfaces.GameState;
 import com.popovych.networking.abstracts.args.DefaultArgumentsImplementation;
 
 import java.util.ArrayList;
@@ -7,7 +10,8 @@ import java.util.ArrayList;
 public class GameModeArguments extends DefaultArgumentsImplementation {
     private enum ArgsType {
         GAME_STATE_CLASS(0),
-        GAME_STATE_ARGS(GAME_STATE_CLASS);
+        GAME_STATE_ARGS(GAME_STATE_CLASS),
+        GAME_ACTOR_SPAWNER(GAME_STATE_ARGS);
 
         private final int index;
         private final int autoinc;
@@ -30,10 +34,12 @@ public class GameModeArguments extends DefaultArgumentsImplementation {
         }
     }
 
-    public GameModeArguments(Class<? extends GameState> gameStateClass, GameStateArguments gsArgs) {
+    public GameModeArguments(Class<? extends GameState> gameStateClass, GameStateArguments gsArgs,
+                             DefaultActorSpawner actorSpawner) {
         super(new ArrayList<>());
         args.add(gameStateClass);
         args.add(gsArgs);
+        args.add(actorSpawner);
     }
 
     public Class<? extends GameState>getGameStateClass() {
@@ -42,5 +48,9 @@ public class GameModeArguments extends DefaultArgumentsImplementation {
 
     public GameStateArguments getGameStateArguments() {
         return (GameStateArguments) args.get(ArgsType.GAME_STATE_ARGS.getIndex());
+    }
+
+    public ActorSpawner getActorsSpawner() {
+        return (ActorSpawner) args.get(ArgsType.GAME_ACTOR_SPAWNER.getIndex());
     }
 }

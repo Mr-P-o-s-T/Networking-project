@@ -1,4 +1,4 @@
-package com.popovych.game;
+package com.popovych.game.args;
 
 import com.popovych.networking.abstracts.args.DefaultArgumentsImplementation;
 

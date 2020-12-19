@@ -1,12 +1,12 @@
-package com.popovych.game;
+package com.popovych.game.args;
 
 import com.popovych.networking.abstracts.args.DefaultArgumentsImplementation;
 
 import java.util.ArrayList;
 
-public class ClientGameArguments extends DefaultArgumentsImplementation {
+public class ActorArguments extends DefaultArgumentsImplementation {
     private enum ArgsType {
-        GAME_STATE_CLASS(0);
+        ;
 
         private final int index;
         private final int autoinc;
@@ -29,12 +29,7 @@ public class ClientGameArguments extends DefaultArgumentsImplementation {
         }
     }
 
-    protected ClientGameArguments(Class<? extends GameState> gameStateClass) {
+    public ActorArguments() {
         super(new ArrayList<>());
-        args.add(gameStateClass);
-    }
-
-    public Class<? extends GameState>getGameStateClass() {
-        return (args.get(ArgsType.GAME_STATE_CLASS.getIndex())).getClass().asSubclass(GameState.class);
     }
 }

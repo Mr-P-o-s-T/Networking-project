@@ -1,10 +1,14 @@
 package com.popovych.networking.messages;
 
-import com.popovych.networking.abstracts.messages.DefaultMessage;
 import com.popovych.networking.data.ServerData;
 import com.popovych.networking.enumerations.MessageType;
 
+import java.io.Serial;
+
 public class ServerDatabaseInsertQueryMessage extends ServerDatabaseQueryMessage {
+    @Serial
+    private static final long serialVersionUID = MessageType.SERVER_INSERT_QUERY.ordinal();
+
     protected ServerData sData = null;
 
     public ServerDatabaseInsertQueryMessage() {
@@ -16,7 +20,11 @@ public class ServerDatabaseInsertQueryMessage extends ServerDatabaseQueryMessage
         this.sData = sData;
     }
 
-    public ServerData getSData() {
+    public ServerData getServerData() {
         return sData;
+    }
+
+    public void setServerData(ServerData sData) {
+        this.sData = sData;
     }
 }

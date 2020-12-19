@@ -1,7 +1,7 @@
 package com.popovych.networking.server;
 
-import com.popovych.game.Game;
-import com.popovych.game.ServerGameArguments;
+import com.popovych.game.interfaces.Game;
+import com.popovych.game.args.ServerGameArguments;
 import com.popovych.networking.abstracts.threads.NetRunnable;
 import com.popovych.networking.abstracts.threads.ThreadGroupMaster;
 import com.popovych.networking.data.ServerData;

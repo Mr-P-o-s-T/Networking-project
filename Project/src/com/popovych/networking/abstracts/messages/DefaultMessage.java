@@ -12,7 +12,12 @@ public abstract class DefaultMessage implements Serializable, Message {
         this.type = type;
     }
 
+    @Override
     public MessageType getType() {
         return type;
+    }
+
+    public void setType(MessageType type) {
+        this.type = type;
     }
 }

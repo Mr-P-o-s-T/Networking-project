@@ -4,7 +4,12 @@ import com.popovych.networking.abstracts.messages.DefaultMessage;
 import com.popovych.networking.data.ServerData;
 import com.popovych.networking.enumerations.MessageType;
 
+import java.io.Serial;
+
 public class ServerDatabaseDeleteQueryMessage extends ServerDatabaseQueryMessage {
+    @Serial
+    private static final long serialVersionUID = MessageType.SERVER_DELETE_QUERY.ordinal();
+
     protected ServerData sData = null;
 
     public ServerDatabaseDeleteQueryMessage() {
@@ -16,7 +21,11 @@ public class ServerDatabaseDeleteQueryMessage extends ServerDatabaseQueryMessage
         this.sData = sData;
     }
 
-    public ServerData getSData() {
+    public ServerData getServerData() {
         return sData;
+    }
+
+    public void setServerData(ServerData sData) {
+        this.sData = sData;
     }
 }

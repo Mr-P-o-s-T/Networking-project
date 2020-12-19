@@ -1,7 +1,7 @@
 package com.popovych.networking.client.game.args;
 
-import com.popovych.game.ClientGameArguments;
-import com.popovych.game.Game;
+import com.popovych.game.args.ClientGameArguments;
+import com.popovych.game.interfaces.Game;
 import com.popovych.networking.client.ClientWorkerThreadArguments;
 import com.popovych.networking.client.enumerations.ClientWorkerThreadType;
 
@@ -12,19 +12,19 @@ public class ClientGameThreadArguments extends ClientWorkerThreadArguments {
         GAME_ARGS(GAME_CLASS);
 
         private final int index;
-        private final int autoinc;
+        private final int autoInc;
 
         ArgsType(ArgsType prevType) {
-            this(prevType.index + prevType.autoinc, prevType.autoinc);
+            this(prevType.index + prevType.autoInc, prevType.autoInc);
         }
 
         ArgsType(int i) {
             this(i, 1);
         }
 
-        ArgsType(int i, int autoinc) {
+        ArgsType(int i, int autoInc) {
             index = i;
-            this.autoinc = autoinc;
+            this.autoInc = autoInc;
         }
 
         public int getIndex() {

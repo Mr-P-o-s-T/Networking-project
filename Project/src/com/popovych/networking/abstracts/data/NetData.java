@@ -13,6 +13,11 @@ public abstract class NetData implements Serializable {
         this.port = port;
     }
 
+    protected NetData(InetAddress IP, int port) throws UnknownHostException {
+        this.address = IP;
+        this.port = port;
+    }
+
     public InetAddress getAddress() {
         return address;
     }

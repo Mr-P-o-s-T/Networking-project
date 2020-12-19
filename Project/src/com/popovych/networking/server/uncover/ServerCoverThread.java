@@ -46,7 +46,7 @@ public class ServerCoverThread extends ThreadGroupWorker implements DatabaseCont
     @Override
     protected void prepareTask() {
         try {
-            serverDBSocket = new Socket(sdbData.getAddress(), sdbData.getPort());
+            serverDBSocket = new Socket(sdbData.getAddress(), sdbData.getServersHandlerPort());
         } catch (IOException e) {
             e.printStackTrace();
         }

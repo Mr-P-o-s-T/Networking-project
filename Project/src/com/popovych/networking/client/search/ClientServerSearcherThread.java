@@ -65,7 +65,7 @@ public class ClientServerSearcherThread extends ThreadGroupWorker implements Dat
     @Override
     protected void prepareTask() {
         try {
-            serverDBSocket = new Socket(sdbData.getAddress(), sdbData.getPort());
+            serverDBSocket = new Socket(sdbData.getAddress(), sdbData.getClientsHandlerPort());
         } catch (IOException e) {
             e.printStackTrace();
             interrupt();
@@ -80,7 +80,7 @@ public class ClientServerSearcherThread extends ThreadGroupWorker implements Dat
         try {
             sendClientQuery(query);
 
-            resData = receiveServerResponse().getSDRData();
+            resData = receiveServerResponse().getServerDatabaseResponseData();
 
             completeDatabaseAction();
             getDatabaseActionCompleteCondition().signalAll();

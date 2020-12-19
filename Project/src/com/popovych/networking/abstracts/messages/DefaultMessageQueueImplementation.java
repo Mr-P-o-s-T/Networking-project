@@ -15,6 +15,11 @@ public class DefaultMessageQueueImplementation implements InputMessageQueue, Out
     }
 
     @Override
+    public boolean isMessagePresent() {
+        return queue.size() > 0;
+    }
+
+    @Override
     public Message getMessage() {
         return queue.peek();
     }

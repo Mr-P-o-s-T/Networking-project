@@ -45,10 +45,10 @@ public class DatabaseServerHandlerThread extends ThreadGroupWorker {
         ServerDatabaseInsertQueryMessage query = getServerQuery();
 
         if (query.getType() == MessageType.SERVER_INSERT_QUERY) {
-            serverDatabase.saveNewAvailableServerData(query.getSData());
+            serverDatabase.saveNewAvailableServerData(query.getServerData());
         }
         else {
-            serverDatabase.deleteAvailableServerData(query.getSData());
+            serverDatabase.deleteAvailableServerData(query.getServerData());
         }
 
         interrupt();

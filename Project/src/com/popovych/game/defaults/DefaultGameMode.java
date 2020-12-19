@@ -1,21 +1,37 @@
 package com.popovych.game.defaults;
 
-import com.popovych.game.*;
+import com.popovych.game.args.GameModeArguments;
+import com.popovych.game.args.GameStateArguments;
+import com.popovych.game.interfaces.ActorSpawner;
+import com.popovych.game.interfaces.GameMode;
+import com.popovych.game.interfaces.GameState;
 
 import java.lang.reflect.InvocationTargetException;
 
 public class DefaultGameMode implements GameMode {
-    private final GameStateArguments gameStateArgs;
+    protected final GameStateArguments gameStateArgs;
     protected Class<? extends GameState> gameStateClass;
     protected GameState sharedState = null;
+    protected ActorSpawner spawner;
 
     public DefaultGameMode() {
-        this(new GameModeArguments(DefaultGameState.class, new GameStateArguments()));
+        this(new GameModeArguments(DefaultGameState.class, new GameStateArguments(), new DefaultActorSpawner()));
     }
 
     public DefaultGameMode(GameModeArguments args) {
         this.gameStateClass = args.getGameStateClass();
         this.gameStateArgs = args.getGameStateArguments();
+        this.spawner = args.getActorsSpawner();
+    }
+
+    @Override
+    public void spawnActors() {
+        spawner.spawnActors(sharedState);
+    }
+
+    @Override
+    public void syncGameState(GameState stateToSync) {
+        sharedState.synchronise(stateToSync);
     }
 
     @Override

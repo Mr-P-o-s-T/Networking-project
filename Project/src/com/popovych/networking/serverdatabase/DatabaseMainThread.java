@@ -3,7 +3,9 @@ package com.popovych.networking.serverdatabase;
 import com.popovych.networking.abstracts.threads.NetRunnable;
 import com.popovych.networking.abstracts.threads.ThreadGroupMaster;
 import com.popovych.networking.data.ServerData;
+import com.popovych.networking.data.ServerDatabaseData;
 import com.popovych.networking.data.ServerDatabaseResponseData;
+import com.popovych.networking.data.defaults.DefaultServerDatabaseData;
 import com.popovych.networking.interfaces.args.Arguments;
 import com.popovych.networking.interfaces.ServerDatabase;
 import com.popovych.networking.serverdatabase.clienthandler.DatabaseClientsHandlerThread;
@@ -22,7 +24,9 @@ public class DatabaseMainThread extends ThreadGroupMaster implements ServerDatab
 
     protected ServerSocket clientsSocket;
     protected ServerSocket serversSocket;
-    protected ServerDatabaseResponseData sdrData = new ServerDatabaseResponseData();
+    protected ServerDatabaseData sdData = new DefaultServerDatabaseData();
+    protected ServerDatabaseResponseData sdrData = new ServerDatabaseResponseData(sdData.getAddress(),
+            sdData.getClientsHandlerPort(), sdData.getServersHandlerPort());
 
     protected DatabaseMainThread() throws UnknownHostException {
         super(Naming.Templates.databaseThread, Naming.Descriptions.mainThread, Naming.Groups.database);
@@ -31,8 +35,8 @@ public class DatabaseMainThread extends ThreadGroupMaster implements ServerDatab
     @Override
     protected void prepareTask() {
         try {
-            clientsSocket = new ServerSocket(sdrData.getPort());
-            serversSocket = new ServerSocket(sdrData.getServersPort());
+            clientsSocket = new ServerSocket(sdData.getClientsHandlerPort());
+            serversSocket = new ServerSocket(sdData.getServersHandlerPort());
         } catch (IOException e) {
             e.printStackTrace();
             interrupt();

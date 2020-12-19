@@ -15,7 +15,8 @@ public class DefaultClientData extends ClientData {
     }
 
     public DefaultClientData() throws UnknownHostException {
-        this(String.format(Naming.Templates.gamerName, getIndexer().getIndex()), "localhost", 1488);
+        this(String.format(Naming.Templates.gamerName, getIndexer().getIndex()), Naming.Constants.defaultClientIP,
+                Naming.Constants.defaultClientPort);
     }
 
     protected static synchronized Indexer<Integer> getIndexer() {

@@ -46,7 +46,7 @@ public class ServerUncoverThread extends ThreadGroupWorker implements DatabaseCo
     @Override
     protected void prepareTask() {
         try {
-            serverDBSocket = new Socket(sdbData.getAddress(), sdbData.getPort());
+            serverDBSocket = new Socket(sdbData.getAddress(), sdbData.getServersHandlerPort());
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -4,7 +4,12 @@ import com.popovych.networking.abstracts.messages.DefaultMessage;
 import com.popovych.networking.data.ServerDatabaseResponseData;
 import com.popovych.networking.enumerations.MessageType;
 
+import java.io.Serial;
+
 public class ServerDatabaseResponseMessage extends DefaultMessage {
+    @Serial
+    private static final long serialVersionUID = MessageType.DATABASE_SERVERS_RESPONSE.ordinal();
+
     protected ServerDatabaseResponseData sdrData = null;
 
     public ServerDatabaseResponseMessage() {
@@ -16,7 +21,11 @@ public class ServerDatabaseResponseMessage extends DefaultMessage {
         this.sdrData = sdrData;
     }
 
-    public ServerDatabaseResponseData getSDRData() {
+    public ServerDatabaseResponseData getServerDatabaseResponseData() {
         return sdrData;
+    }
+
+    public void setServerDatabaseResponseData(ServerDatabaseResponseData sdrData) {
+        this.sdrData = sdrData;
     }
 }

@@ -11,7 +11,8 @@ public class DefaultServerData extends ServerData {
     private static Indexer<Integer> gamerIndexer = null;
 
     public DefaultServerData() throws UnknownHostException {
-        this(String.format(Naming.Templates.serverName, getIndexer().getIndex()), "", "localhost", 1489);
+        this(String.format(Naming.Templates.serverName, getIndexer().getIndex()), "",
+                Naming.Constants.defaultServerIP, Naming.Constants.defaultServerPort);
     }
 
     public DefaultServerData(String name, String password, String IP, int port) throws UnknownHostException {
