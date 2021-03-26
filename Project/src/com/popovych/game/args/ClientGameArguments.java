@@ -2,6 +2,7 @@ package com.popovych.game.args;
 
 import com.popovych.game.interfaces.GameMessageTransmitter;
 import com.popovych.game.interfaces.GameState;
+import com.popovych.game.ui.abstracts.DefaultScene;
 import com.popovych.networking.abstracts.args.DefaultArgumentsImplementation;
 import com.popovych.networking.data.ClientData;
 
@@ -35,16 +36,16 @@ public class ClientGameArguments extends DefaultArgumentsImplementation {
         }
     }
 
-    public ClientGameArguments(Class<? extends GameState> gameStateClass, GameStateArguments gsArgs, ClientData clientData) {
+    public ClientGameArguments(Class<? extends GameState> gameStateClass, GameStateArguments gsArgs) {
         super(new ArrayList<>());
         args.add(gameStateClass);
         args.add(gsArgs);
         args.add(null);
-        args.add(clientData);
+        args.add(null);
     }
 
     public Class<? extends GameState> getGameStateClass() {
-        return (args.get(ArgsType.GAME_STATE_CLASS.getIndex())).getClass().asSubclass(GameState.class);
+        return ((Class<?>)args.get(ArgsType.GAME_STATE_CLASS.getIndex())).asSubclass(GameState.class);
     }
 
     public GameStateArguments getGameStateArguments() {
@@ -61,5 +62,9 @@ public class ClientGameArguments extends DefaultArgumentsImplementation {
 
     public ClientData getClientData() {
         return (ClientData) args.get(ArgsType.CLIENT_DATA.getIndex());
+    }
+
+    public void setClientData(ClientData cData) {
+        args.set(ArgsType.CLIENT_DATA.getIndex(), cData);
     }
 }

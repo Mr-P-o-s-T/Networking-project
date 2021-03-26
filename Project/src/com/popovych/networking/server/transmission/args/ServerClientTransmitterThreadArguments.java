@@ -1,5 +1,7 @@
 package com.popovych.networking.server.transmission.args;
 
+import com.popovych.game.interfaces.ClientDataContainer;
+import com.popovych.networking.interfaces.MessageQueueProvider;
 import com.popovych.networking.interfaces.message.InputMessageQueue;
 import com.popovych.networking.interfaces.message.OutputMessageQueue;
 import com.popovych.networking.server.ServerWorkerThreadArguments;
@@ -14,8 +16,8 @@ public class ServerClientTransmitterThreadArguments extends ServerWorkerThreadAr
     private enum ArgsType {
         THREAD_TYPE(0),
         CLIENT_SOCKET(THREAD_TYPE),
-        INPUT_MESSAGE_QUEUE(CLIENT_SOCKET),
-        OUTPUT_MESSAGE_QUEUE(INPUT_MESSAGE_QUEUE);
+        MESSAGE_QUEUE_PROVIDER(CLIENT_SOCKET),
+        CLIENT_DATA_CONTAINER(MESSAGE_QUEUE_PROVIDER);
 
         private final int index;
         private final int autoinc;
@@ -38,23 +40,23 @@ public class ServerClientTransmitterThreadArguments extends ServerWorkerThreadAr
         }
     }
 
-    public ServerClientTransmitterThreadArguments(Socket clientHandlerSocket, InputMessageQueue inputMessageQueue,
-                                                  OutputMessageQueue outputMessageQueue) {
+    public ServerClientTransmitterThreadArguments(Socket clientHandlerSocket, MessageQueueProvider provider,
+                                                  ClientDataContainer container) {
         super(ServerWorkerThreadType.CLIENT_TRANSMITTER);
         args.add(clientHandlerSocket);
-        args.add(inputMessageQueue);
-        args.add(outputMessageQueue);
+        args.add(provider);
+        args.add(container);
     }
 
     public Socket getClientHandlerSocket() {
         return (Socket) args.get(ArgsType.CLIENT_SOCKET.getIndex());
     }
 
-    public ServerMessageQueue getInputMessageQueue() {
-        return (ServerMessageQueue) args.get(ArgsType.INPUT_MESSAGE_QUEUE.getIndex());
+    public MessageQueueProvider getMessageQueueProvider() {
+        return (MessageQueueProvider) args.get(ArgsType.MESSAGE_QUEUE_PROVIDER.getIndex());
     }
 
-    public ServerMessageQueue getOutputMessageQueue() {
-        return (ServerMessageQueue) args.get(ArgsType.OUTPUT_MESSAGE_QUEUE.getIndex());
+    public ClientDataContainer getClientDataContainer() {
+        return (ClientDataContainer) args.get(ArgsType.CLIENT_DATA_CONTAINER.getIndex());
     }
 }

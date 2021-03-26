@@ -11,12 +11,12 @@ public class PlayerGameData extends GameTransmitterGameData {
     protected Thread registered;
 
     public PlayerGameData(Thread registered) {
-        super(new ServerMessageQueue(), new ServerMessageQueue());
+        this(new ServerMessageQueue());
         this.registered = registered;
     }
 
-    public PlayerGameData(InputMessageQueue inputMessageQueue, OutputMessageQueue outputMessageQueue) {
-        super(inputMessageQueue, outputMessageQueue);
+    protected PlayerGameData(OutputMessageQueue outputMessageQueue) {
+        super(outputMessageQueue);
     }
 
     public void setClientData(ClientData cData) {

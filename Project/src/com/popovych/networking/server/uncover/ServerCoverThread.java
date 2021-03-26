@@ -1,13 +1,16 @@
 package com.popovych.networking.server.uncover;
 
+import com.popovych.networking.abstracts.Indexer;
 import com.popovych.networking.abstracts.threads.ThreadGroupWorker;
 import com.popovych.networking.data.ServerData;
 import com.popovych.networking.data.ServerDatabaseData;
+import com.popovych.networking.data.ServerDatabaseResponseData;
 import com.popovych.networking.interfaces.DatabaseControllerExecutor;
+import com.popovych.networking.interfaces.args.Arguments;
 import com.popovych.networking.messages.ServerDatabaseDeleteQueryMessage;
 import com.popovych.networking.messages.ServerDatabaseQueryMessage;
 import com.popovych.networking.server.uncover.args.ServerCoverThreadArguments;
-import com.popovych.networking.statics.Naming;
+import com.popovych.statics.Naming;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -26,10 +29,8 @@ public class ServerCoverThread extends ThreadGroupWorker implements DatabaseCont
 
     protected Socket serverDBSocket;
 
-    public ServerCoverThread(ThreadGroup group, ServerCoverThreadArguments args) {
-        super(Naming.Templates.serverThread, Naming.Descriptions.serverCoverThread, group);
-        this.sData = args.getServerData();
-        this.sdbData = args.getServerDatabaseData();
+    public ServerCoverThread(ThreadGroup group, Indexer<Integer> indexer, Arguments args) {
+        super(args, Naming.Templates.serverThread, Naming.Descriptions.serverCoverThread, group, indexer, true);
     }
 
     void sendServerQuery(ServerDatabaseQueryMessage query) {
@@ -44,6 +45,13 @@ public class ServerCoverThread extends ThreadGroupWorker implements DatabaseCont
     }
 
     @Override
+    protected void processArgs(Arguments arguments) {
+        ServerCoverThreadArguments args = (ServerCoverThreadArguments) arguments;
+        this.sData = args.getServerData();
+        this.sdbData = args.getServerDatabaseData();
+    }
+
+    @Override
     protected void prepareTask() {
         try {
             serverDBSocket = new Socket(sdbData.getAddress(), sdbData.getServersHandlerPort());
@@ -55,8 +63,6 @@ public class ServerCoverThread extends ThreadGroupWorker implements DatabaseCont
     @Override
     protected void runTask() {
         sendServerQuery(new ServerDatabaseDeleteQueryMessage(sData));
-
-        interrupt();
     }
 
     @Override
@@ -84,6 +90,11 @@ public class ServerCoverThread extends ThreadGroupWorker implements DatabaseCont
             serverUpdateInfoCondition = locker.newCondition();
         }
         return serverUpdateInfoCondition;
+    }
+
+    @Override
+    public ServerDatabaseResponseData getServerDatabaseResponseData() {
+        return null;
     }
 
     @Override

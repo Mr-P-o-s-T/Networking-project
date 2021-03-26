@@ -1,13 +1,18 @@
 package com.popovych.networking.abstracts.threads;
 
+import com.popovych.networking.abstracts.Indexer;
+import com.popovych.networking.interfaces.args.Arguments;
 import com.popovych.networking.interfaces.threadgroup.WorkerSpawner;
 import com.popovych.networking.interfaces.threadgroup.WorkerSpawnerMemo;
+
+import java.util.Arrays;
 
 public abstract class ThreadGroupMaster extends NetRunnable implements WorkerSpawner, WorkerSpawnerMemo {
     protected ThreadGroup group;
 
-    protected ThreadGroupMaster(String template, String description, String groupName) {
-        super(template, description);
+    protected ThreadGroupMaster(Arguments args, String template, String description, String groupName,
+                                Indexer<Integer> indexer, boolean isOneIteration, boolean launchExecutor) {
+        super(args, template, description, indexer, isOneIteration, launchExecutor);
         this.group = new ThreadGroup(groupName);
     }
 
@@ -18,16 +23,24 @@ public abstract class ThreadGroupMaster extends NetRunnable implements WorkerSpa
     }
 
     @Override
-    public void join() {
+    protected void runTask() {
+        try {
+            join();
+        } catch (InterruptedException e) {
+            interrupt();
+            return;
+        }
+        Thread.yield();
+    }
+
+    @Override
+    public void join() throws InterruptedException {
         Thread[] threads = new Thread[group.activeCount()];
         group.enumerate(threads);
 
         for (Thread thread : threads) {
-            try {
+            if (thread != null)
                 thread.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
         }
 
         super.join();

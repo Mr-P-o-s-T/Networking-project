@@ -1,5 +1,6 @@
 package com.popovych.networking.server.transmission.args;
 
+import com.popovych.game.interfaces.ClientDataContainer;
 import com.popovych.networking.data.ServerData;
 import com.popovych.networking.interfaces.MessageQueueProvider;
 import com.popovych.networking.server.ServerWorkerThreadArguments;
@@ -9,7 +10,8 @@ public class ServerClientsHandlerThreadArguments extends ServerWorkerThreadArgum
     private enum ArgsType {
         THREAD_TYPE(0),
         SERVER_DATA(THREAD_TYPE),
-        MESSAGE_QUEUE_PROVIDER(SERVER_DATA);
+        MESSAGE_QUEUE_PROVIDER(SERVER_DATA),
+        CLIENT_DATA_CONTAINER(MESSAGE_QUEUE_PROVIDER);
 
         private final int index;
         private final int autoinc;
@@ -32,10 +34,12 @@ public class ServerClientsHandlerThreadArguments extends ServerWorkerThreadArgum
         }
     }
 
-    public ServerClientsHandlerThreadArguments(ServerData sData, MessageQueueProvider provider) {
+    public ServerClientsHandlerThreadArguments(ServerData sData, MessageQueueProvider provider,
+                                               ClientDataContainer container) {
         super(ServerWorkerThreadType.CLIENTS_HANDLER);
         args.add(sData);
         args.add(provider);
+        args.add(container);
     }
 
     public ServerData getSData() {
@@ -44,5 +48,9 @@ public class ServerClientsHandlerThreadArguments extends ServerWorkerThreadArgum
 
     public MessageQueueProvider getMessageQueueProvider() {
         return (MessageQueueProvider) args.get(ArgsType.MESSAGE_QUEUE_PROVIDER.getIndex());
+    }
+
+    public ClientDataContainer getClientDataContainer() {
+        return (ClientDataContainer) args.get(ArgsType.CLIENT_DATA_CONTAINER.getIndex());
     }
 }

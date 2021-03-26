@@ -4,5 +4,5 @@ public interface InputMessageQueue {
     boolean isMessagePresent();
 
     Message getMessage();
-    Message pollMessage();
+    Message pollMessage() throws InterruptedException;
 }

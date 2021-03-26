@@ -1,20 +1,28 @@
 package com.popovych.networking.abstracts.threads;
 
 import com.popovych.networking.abstracts.Indexer;
+import com.popovych.networking.interfaces.args.Arguments;
 
 public abstract class NetRunnable implements Runnable {
     private final Thread executor;
+    private int oneIteration = -1;
 
-    private static Indexer<Integer> indexer = null;
-
-    NetRunnable(String template, String description) {
-        this(template, description, null);
+    NetRunnable(Arguments args, String template, String description, Indexer<Integer> indexer, boolean isOneIteration,
+                boolean launchExecutor) {
+        this(args, template, description, indexer, null, isOneIteration, launchExecutor);
     }
 
-    NetRunnable(String template, String description, ThreadGroup group) {
-        executor = new Thread(group, this, String.format(template, getIndexer().getIndex(), description));
-        executor.start();
+    NetRunnable(Arguments args, String template, String description, Indexer<Integer> indexer, ThreadGroup group,
+                boolean isOneIteration, boolean launchExecutor) {
+        if (isOneIteration)
+            this.oneIteration = -oneIteration;
+        executor = new Thread(group, this, String.format(template, indexer.getIndex(), description));
+        processArgs(args);
+        if (launchExecutor)
+            executor.start();
     }
+
+    protected abstract void processArgs(Arguments arguments);
 
     @Override
     public void run() {
@@ -30,33 +38,23 @@ public abstract class NetRunnable implements Runnable {
     protected abstract void finishTask();
 
     public boolean isRunning() {
-        return !executor.isInterrupted();
+        if (oneIteration >= 0) {
+            if (executor.isInterrupted() || oneIteration == 0) return false;
+            oneIteration--;
+            return true;
+        }
+        else
+            return !executor.isInterrupted();
     }
 
     public void interrupt() {
         executor.interrupt();
     }
 
-    public void join() {
+    public void join() throws InterruptedException{
         if (Thread.currentThread() != executor) {
-            try {
-                executor.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            executor.join();
         }
-    }
-
-    protected static synchronized Indexer<Integer> getIndexer() {
-        if (indexer == null) {
-            return indexer = new Indexer<>() {
-                @Override
-                protected void updateIndex() {
-                    index++;
-                }
-            };
-        }
-        return indexer;
     }
 
 }

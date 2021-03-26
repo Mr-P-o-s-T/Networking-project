@@ -3,6 +3,7 @@ package com.popovych.game.args;
 import com.popovych.game.interfaces.GameMessageTransmitter;
 import com.popovych.game.interfaces.GameMode;
 import com.popovych.networking.abstracts.args.DefaultArgumentsImplementation;
+import com.popovych.networking.data.ServerData;
 
 import java.util.ArrayList;
 
@@ -10,7 +11,8 @@ public class ServerGameArguments extends DefaultArgumentsImplementation {
     private enum ArgsType {
         GAME_MODE_CLASS(0),
         GAME_MODE_ARGS(GAME_MODE_CLASS),
-        GAME_MESSAGE_TRANSMITTER(GAME_MODE_ARGS);
+        GAME_MESSAGE_TRANSMITTER(GAME_MODE_ARGS),
+        SERVER_DATA(GAME_MESSAGE_TRANSMITTER);
 
         private final int index;
         private final int autoinc;
@@ -33,15 +35,16 @@ public class ServerGameArguments extends DefaultArgumentsImplementation {
         }
     }
 
-    public ServerGameArguments(Class<? extends GameMode> gameModeClass) {
-        this(gameModeClass, null);
+    public ServerGameArguments(Class<? extends GameMode> gameModeClass, ServerData serverData) {
+        this(gameModeClass, null, serverData);
     }
 
-    public ServerGameArguments(Class<? extends GameMode> gameModeClass, GameModeArguments gmArgs) {
+    public ServerGameArguments(Class<? extends GameMode> gameModeClass, GameModeArguments gmArgs, ServerData serverData) {
         super(new ArrayList<>());
         args.add(gameModeClass);
         args.add(gmArgs);
         args.add(null);
+        args.add(serverData);
     }
 
     public Class<? extends GameMode>getGameModeClass() {
@@ -61,4 +64,7 @@ public class ServerGameArguments extends DefaultArgumentsImplementation {
         return (GameMessageTransmitter) args.get(ArgsType.GAME_MESSAGE_TRANSMITTER.getIndex());
     }
 
+    public ServerData getServerData() {
+        return (ServerData) args.get(ArgsType.SERVER_DATA.getIndex());
+    }
 }

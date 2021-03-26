@@ -1,13 +1,16 @@
 package com.popovych.networking.server.uncover;
 
+import com.popovych.networking.abstracts.Indexer;
 import com.popovych.networking.abstracts.threads.ThreadGroupWorker;
 import com.popovych.networking.data.ServerData;
 import com.popovych.networking.data.ServerDatabaseData;
+import com.popovych.networking.data.ServerDatabaseResponseData;
 import com.popovych.networking.interfaces.DatabaseControllerExecutor;
+import com.popovych.networking.interfaces.args.Arguments;
 import com.popovych.networking.messages.ServerDatabaseInsertQueryMessage;
 import com.popovych.networking.messages.ServerDatabaseQueryMessage;
 import com.popovych.networking.server.uncover.args.ServerUncoverThreadArguments;
-import com.popovych.networking.statics.Naming;
+import com.popovych.statics.Naming;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -26,10 +29,9 @@ public class ServerUncoverThread extends ThreadGroupWorker implements DatabaseCo
 
     protected Socket serverDBSocket;
 
-    public ServerUncoverThread(ThreadGroup group, ServerUncoverThreadArguments args) {
-        super(Naming.Templates.serverThread, Naming.Descriptions.serverUncoverThread, group);
-        this.sData = args.getServerData();
-        this.sdbData = args.getServerDatabaseData();
+    public ServerUncoverThread(ThreadGroup group, Indexer<Integer> indexer, Arguments args) {
+        super(args, Naming.Templates.serverThread, Naming.Descriptions.serverUncoverThread, group, indexer,
+                true);
     }
 
     void sendServerQuery(ServerDatabaseQueryMessage query) {
@@ -44,6 +46,13 @@ public class ServerUncoverThread extends ThreadGroupWorker implements DatabaseCo
     }
 
     @Override
+    protected void processArgs(Arguments arguments) {
+        ServerUncoverThreadArguments args = (ServerUncoverThreadArguments) arguments;
+        this.sData = args.getServerData();
+        this.sdbData = args.getServerDatabaseData();
+    }
+
+    @Override
     protected void prepareTask() {
         try {
             serverDBSocket = new Socket(sdbData.getAddress(), sdbData.getServersHandlerPort());
@@ -55,8 +64,6 @@ public class ServerUncoverThread extends ThreadGroupWorker implements DatabaseCo
     @Override
     protected void runTask() {
         sendServerQuery(new ServerDatabaseInsertQueryMessage(sData));
-
-        interrupt();
     }
 
     @Override
@@ -89,5 +96,10 @@ public class ServerUncoverThread extends ThreadGroupWorker implements DatabaseCo
             serverUpdateInfoCondition = locker.newCondition();
         }
         return serverUpdateInfoCondition;
+    }
+
+    @Override
+    public ServerDatabaseResponseData getServerDatabaseResponseData() {
+        return null;
     }
 }

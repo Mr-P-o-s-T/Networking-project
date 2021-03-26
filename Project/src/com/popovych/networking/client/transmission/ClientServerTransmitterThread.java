@@ -1,5 +1,6 @@
 package com.popovych.networking.client.transmission;
 
+import com.popovych.networking.abstracts.Indexer;
 import com.popovych.networking.abstracts.threads.ThreadGroupWorker;
 import com.popovych.networking.client.transmission.args.ClientServerTransmitterThreadArguments;
 import com.popovych.networking.data.ClientData;
@@ -7,10 +8,11 @@ import com.popovych.networking.enumerations.MessageType;
 import com.popovych.networking.interfaces.MessageQueueProvider;
 import com.popovych.networking.interfaces.ServerDataProvider;
 import com.popovych.networking.interfaces.DatabaseController;
+import com.popovych.networking.interfaces.args.Arguments;
 import com.popovych.networking.interfaces.message.InputMessageQueue;
 import com.popovych.networking.interfaces.message.Message;
 import com.popovych.networking.interfaces.message.OutputMessageQueue;
-import com.popovych.networking.statics.Naming;
+import com.popovych.statics.Naming;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -26,8 +28,14 @@ public class ClientServerTransmitterThread extends ThreadGroupWorker {
 
     protected Socket socket;
 
-    public ClientServerTransmitterThread(ThreadGroup group, ClientServerTransmitterThreadArguments args) {
-        super(Naming.Templates.clientThread, Naming.Descriptions.serverTransmitterThread, group);
+    public ClientServerTransmitterThread(ThreadGroup group, Indexer<Integer> indexer, Arguments args) {
+        super(args, Naming.Templates.clientThread, Naming.Descriptions.serverTransmitterThread, group, indexer,
+                false);
+    }
+
+    @Override
+    protected void processArgs(Arguments arguments) {
+        ClientServerTransmitterThreadArguments args = (ClientServerTransmitterThreadArguments) arguments;
         cData = args.getCData();
         controller = args.getSearchController();
         sDataProvider = args.getServerDataProvider();
@@ -39,16 +47,17 @@ public class ClientServerTransmitterThread extends ThreadGroupWorker {
 
     @Override
     protected void prepareTask() {
-        controller.getDatabaseControllerLocker().lock();
-        try {
-            if (controller.databaseActionExecutionNow())
-                controller.getDatabaseActionCompleteCondition().await();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            interrupt();
-        }
-        finally {
-            controller.getDatabaseControllerLocker().unlock();
+        if (controller != null) {
+            controller.getDatabaseControllerLocker().lock();
+            try {
+                if (controller.databaseActionExecutionNow())
+                    controller.getDatabaseActionCompleteCondition().await();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                interrupt();
+            } finally {
+                controller.getDatabaseControllerLocker().unlock();
+            }
         }
 
         sDataProvider.getChosenServerLocker().lock();
@@ -70,24 +79,19 @@ public class ClientServerTransmitterThread extends ThreadGroupWorker {
         }
     }
 
-    protected void sendMessage(Message message) {
+    protected void sendMessage(Message message) throws IOException {
         ObjectOutputStream out = null;
-        try {
-            out = new ObjectOutputStream(socket.getOutputStream());
-            out.writeObject(message);
-        } catch (IOException e) {
-            e.printStackTrace();
-            interrupt();
-        }
+        out = new ObjectOutputStream(socket.getOutputStream());
+        out.writeObject(message);
     }
 
-    protected Message receiveMessage() {
+    protected Message receiveMessage() throws IOException {
         Message message = null;
         ObjectInputStream in = null;
         try {
             in = new ObjectInputStream(socket.getInputStream());
             message = (Message) in.readObject();
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (ClassNotFoundException e) {
             e.printStackTrace();
             interrupt();
         }
@@ -96,18 +100,39 @@ public class ClientServerTransmitterThread extends ThreadGroupWorker {
 
     @Override
     protected void runTask() {
-        Message message = inputMessageQueue.pollMessage();
+        Message message = null;
+        try {
+            message = inputMessageQueue.pollMessage();
+        } catch (InterruptedException e) {
+            interrupt();
+            return;
+        }
 
         if (message.getType() == MessageType.GAME_CLIENT_UNREGISTER)
             interrupt();
 
-        sendMessage(message);
-        message = receiveMessage();
+        try {
+            sendMessage(message);
+        } catch (IOException e) {
+            e.printStackTrace();
+            interrupt();
+            return;
+        }
+        try {
+            message = receiveMessage();
+        } catch (IOException e) {
+            interrupt();
+            return;
+        }
 
         if (message.getType() == MessageType.GAME_SERVER_STOP)
             interrupt();
 
-        outputMessageQueue.postMessage(message);
+        try {
+            outputMessageQueue.postMessage(message);
+        } catch (InterruptedException ignored) {
+            interrupt();
+        }
     }
 
     @Override

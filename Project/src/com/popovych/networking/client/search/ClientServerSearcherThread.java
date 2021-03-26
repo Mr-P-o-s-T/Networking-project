@@ -1,14 +1,16 @@
 package com.popovych.networking.client.search;
 
+import com.popovych.networking.abstracts.Indexer;
 import com.popovych.networking.abstracts.threads.ThreadGroupWorker;
 import com.popovych.networking.client.search.args.ClientServerSearcherThreadArguments;
 import com.popovych.networking.data.ClientData;
 import com.popovych.networking.data.ServerDatabaseData;
 import com.popovych.networking.data.ServerDatabaseResponseData;
 import com.popovych.networking.interfaces.DatabaseControllerExecutor;
+import com.popovych.networking.interfaces.args.Arguments;
 import com.popovych.networking.messages.ClientDatabaseQueryMessage;
 import com.popovych.networking.messages.ServerDatabaseResponseMessage;
-import com.popovych.networking.statics.Naming;
+import com.popovych.statics.Naming;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -30,10 +32,8 @@ public class ClientServerSearcherThread extends ThreadGroupWorker implements Dat
 
     protected Socket serverDBSocket;
 
-    public ClientServerSearcherThread(ThreadGroup group, ClientServerSearcherThreadArguments args) {
-        super(Naming.Templates.clientThread, Naming.Descriptions.serverSearcherThread, group);
-        this.cData = args.getClientData();
-        this.sdbData = args.getServerDatabaseData();
+    public ClientServerSearcherThread(ThreadGroup group, Indexer<Integer> indexer, Arguments args) {
+        super(args, Naming.Templates.clientThread, Naming.Descriptions.serverSearcherThread, group, indexer, true);
     }
 
     protected void sendClientQuery(ClientDatabaseQueryMessage query) {
@@ -63,12 +63,20 @@ public class ClientServerSearcherThread extends ThreadGroupWorker implements Dat
     }
 
     @Override
+    protected void processArgs(Arguments arguments) {
+        ClientServerSearcherThreadArguments args = (ClientServerSearcherThreadArguments) arguments;
+        this.cData = args.getClientData();
+        this.sdbData = args.getServerDatabaseData();
+    }
+
+    @Override
     protected void prepareTask() {
         try {
             serverDBSocket = new Socket(sdbData.getAddress(), sdbData.getClientsHandlerPort());
         } catch (IOException e) {
             e.printStackTrace();
             interrupt();
+            return;
         }
 
         this.query = new ClientDatabaseQueryMessage(cData);
@@ -86,7 +94,6 @@ public class ClientServerSearcherThread extends ThreadGroupWorker implements Dat
             getDatabaseActionCompleteCondition().signalAll();
         } finally {
             locker.unlock();
-            interrupt();
         }
     }
 
@@ -119,5 +126,10 @@ public class ClientServerSearcherThread extends ThreadGroupWorker implements Dat
             serverFoundCondition = locker.newCondition();
         }
         return serverFoundCondition;
+    }
+
+    @Override
+    public ServerDatabaseResponseData getServerDatabaseResponseData() {
+        return resData;
     }
 }

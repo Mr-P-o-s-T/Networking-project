@@ -1,8 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.popovych.game.ui.controller.ServerPickController">
-    <Label alignment="CENTER" AnchorPane.bottomAnchor="192" AnchorPane.leftAnchor="245" AnchorPane.rightAnchor="245" AnchorPane.topAnchor="192">Server Picker Screen</Label>
-</AnchorPane>
+<GridPane alignment="CENTER" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.popovych.game.ui.controller.ServerPickController">
+    <children>
+        <Label alignment="CENTER" text="Choose server for connection" GridPane.columnSpan="2147483647">
+            <font>
+                <Font size="36.0" />
+            </font>
+            <padding>
+                <Insets bottom="25.0" />
+            </padding>
+        </Label>
+        <Label alignment="CENTER" text="Server list" GridPane.columnSpan="2147483647" GridPane.rowIndex="1">
+            <GridPane.margin>
+                <Insets bottom="15.0" left="15.0" />
+            </GridPane.margin>
+        </Label>
+        <ListView fx:id="serverList" prefHeight="200.0" GridPane.rowIndex="2">
+            <GridPane.margin>
+                <Insets left="15.0" right="15.0" />
+            </GridPane.margin>
+        </ListView>
+        <HBox alignment="BASELINE_RIGHT" spacing="15.0" GridPane.rowIndex="4">
+            <children>
+                <Button fx:id="searchButton" mnemonicParsing="false" onAction="#searchAction" prefWidth="65.0" text="Search" />
+                <Button fx:id="connectButton" disable="true" mnemonicParsing="false" onAction="#connectAction" prefWidth="65.0" text="Connect" />
+                <Button fx:id="backButton" cancelButton="true" mnemonicParsing="false" onAction="#backAction" prefWidth="65.0" text="Back">
+               <HBox.margin>
+                  <Insets right="15.0" />
+               </HBox.margin></Button>
+            </children>
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+         <GridPane.margin>
+            <Insets top="10.0" />
+         </GridPane.margin>
+        </HBox>
+   </children>
+   <columnConstraints>
+       <ColumnConstraints />
+   </columnConstraints>
+   <rowConstraints>
+       <RowConstraints />
+       <RowConstraints />
+       <RowConstraints />
+       <RowConstraints />
+       <RowConstraints />
+       <RowConstraints />
+   </rowConstraints>
+</GridPane>

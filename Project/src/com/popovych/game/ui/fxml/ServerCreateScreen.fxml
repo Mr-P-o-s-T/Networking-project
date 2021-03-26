@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.*?>
+<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
+
+<?import javafx.scene.control.SpinnerValueFactory?>
+<?import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory?>
+<?import com.popovych.statics.Naming?>
+<?import com.popovych.statics.Naming.Constants?>
 
 <GridPane alignment="CENTER" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.popovych.game.ui.controller.ServerCreateController">
     <children>
@@ -47,13 +53,26 @@
          <GridPane.margin>
             <Insets left="15.0" />
          </GridPane.margin></Label>
-      <Spinner fx:id="fieldSize" prefHeight="25.0" prefWidth="206.0" GridPane.columnIndex="2" GridPane.columnSpan="2147483647" GridPane.rowIndex="6">
+      <Spinner fx:id="fieldSize" editable="true" prefHeight="25.0" prefWidth="178.0" GridPane.columnIndex="2" GridPane.columnSpan="2147483647" GridPane.rowIndex="6">
           <valueFactory>
-              <SpinnerValueFactory.IntegerSpinnerValueFactory min="3" max="10" />
+              <SpinnerValueFactory.IntegerSpinnerValueFactory>
+                  <min>
+                    <Naming.Constants fx:constant="minimalFieldSize" />
+                  </min>
+                  <max>
+                      <Naming.Constants fx:constant="maximalFieldSize" />
+                  </max>
+              </SpinnerValueFactory.IntegerSpinnerValueFactory>
           </valueFactory>
           <GridPane.margin>
             <Insets bottom="5.0" right="15.0" />
-         </GridPane.margin></Spinner>
+         </GridPane.margin>
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+         <cursor>
+            <Cursor fx:constant="V_RESIZE" />
+         </cursor></Spinner>
       <Separator orientation="VERTICAL" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.rowSpan="2">
          <GridPane.margin>
             <Insets left="10.0" right="5.0" />
@@ -64,15 +83,15 @@
          </GridPane.margin></Separator>
         <HBox alignment="BASELINE_RIGHT" spacing="15.0" GridPane.columnIndex="2" GridPane.rowIndex="8">
             <opaqueInsets>
-                <Insets/>
+                <Insets />
             </opaqueInsets>
             <GridPane.margin>
-                <Insets top="10.0"/>
+                <Insets top="10.0" />
             </GridPane.margin>
-            <Button mnemonicParsing="false" prefWidth="65.0" onAction="#startAction" text="Start"/>
-            <Button mnemonicParsing="false" prefWidth="65.0" onAction="#backAction" text="Back">
+            <Button mnemonicParsing="false" onAction="#startAction" prefWidth="65.0" text="Start" />
+            <Button cancelButton="true" mnemonicParsing="false" onAction="#backAction" prefWidth="65.0" text="Back">
                 <HBox.margin>
-                    <Insets right="15.0"/>
+                    <Insets right="15.0" />
                 </HBox.margin>
             </Button>
         </HBox>

@@ -1,5 +1,6 @@
 package com.popovych.networking.serverdatabase.clienthandler;
 
+import com.popovych.networking.abstracts.Indexer;
 import com.popovych.networking.abstracts.threads.NetRunnable;
 import com.popovych.networking.abstracts.threads.ThreadSubgroupMaster;
 import com.popovych.networking.interfaces.args.Arguments;
@@ -8,7 +9,7 @@ import com.popovych.networking.serverdatabase.DatabaseWorkerThreadArguments;
 import com.popovych.networking.serverdatabase.clienthandler.args.DatabaseClientHandlerThreadArguments;
 import com.popovych.networking.serverdatabase.clienthandler.args.DatabaseClientsHandlerThreadArguments;
 import com.popovych.networking.serverdatabase.enumerations.DatabaseWorkerThreadType;
-import com.popovych.networking.statics.Naming;
+import com.popovych.statics.Naming;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -19,9 +20,17 @@ public class DatabaseClientsHandlerThread extends ThreadSubgroupMaster {
     ServerSocket socket;
     ServerDatabase database;
 
-    public DatabaseClientsHandlerThread(ThreadGroup group, DatabaseClientsHandlerThreadArguments args) {
-        super(Naming.Templates.databaseThread, Naming.Descriptions.clientsHandlerThread, group,
-                Naming.Groups.clientHandler);
+    private static Indexer<Integer> indexer;
+
+    public DatabaseClientsHandlerThread(ThreadGroup group, Indexer<Integer> indexer, Arguments args) {
+        super(args, Naming.Templates.databaseThread, Naming.Descriptions.clientsHandlerThread, group,
+                Naming.Groups.clientHandler, (DatabaseClientsHandlerThread.indexer = indexer), false);
+
+    }
+
+    @Override
+    protected void processArgs(Arguments arguments) {
+        DatabaseClientsHandlerThreadArguments args = (DatabaseClientsHandlerThreadArguments) arguments;
         database = args.getServerDatabase();
         socket = args.getClientsSocket();
     }
@@ -58,7 +67,7 @@ public class DatabaseClientsHandlerThread extends ThreadSubgroupMaster {
         DatabaseWorkerThreadType newThreadType = ((DatabaseWorkerThreadArguments)workerArgs).getWorkerType();
 
         if (newThreadType == DatabaseWorkerThreadType.CLIENT_HANDLER) {
-            return new DatabaseClientHandlerThread(group, (DatabaseClientHandlerThreadArguments) workerArgs);
+            return new DatabaseClientHandlerThread(group, indexer, workerArgs);
         }
         else {
             throw new Exception();

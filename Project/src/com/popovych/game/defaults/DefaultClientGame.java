@@ -6,16 +6,19 @@ import com.popovych.game.interfaces.Game;
 import com.popovych.game.interfaces.GameMessageTransmitter;
 import com.popovych.game.interfaces.GameState;
 import com.popovych.game.messages.*;
+import com.popovych.game.ui.abstracts.DefaultScene;
 import com.popovych.networking.data.ClientData;
 import com.popovych.networking.enumerations.MessageType;
 import com.popovych.networking.interfaces.message.Message;
+import javafx.application.Platform;
+import javafx.scene.Scene;
 
 import java.lang.reflect.InvocationTargetException;
 
 public class DefaultClientGame implements Game.ClientGame {
     boolean gameRunning;
 
-    protected GameState currentState, changeableState;
+    protected GameState currentState, stateSave;
     protected GameMessageTransmitter transmitter;
     protected ClientData cData;
 
@@ -23,33 +26,45 @@ public class DefaultClientGame implements Game.ClientGame {
     public void initGame(ClientGameArguments args) {
         try {
             GameStateArguments gsArgs = args.getGameStateArguments();
-            currentState = args.getGameStateClass().getConstructor(GameStateArguments.class).newInstance(gsArgs);
-            changeableState = args.getGameStateClass().getConstructor(GameStateArguments.class).newInstance(gsArgs);
+            currentState = args.getGameStateClass().getConstructor(GameStateArguments.class).newInstance(new
+                    GameStateArguments(gsArgs, true));
+            stateSave = args.getGameStateClass().getConstructor(GameStateArguments.class).newInstance(
+                    new GameStateArguments(gsArgs, false));
         } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
             e.printStackTrace();
         }
         transmitter = args.getMessageTransmitter();
         cData = args.getClientData();
 
-        transmitter.sendMessage(new GameClientRegisterMessage(cData));
-        Message message = transmitter.receiveMessage();
-        if (message.getType() == MessageType.GAME_SERVER_SYNC) {
-            GameServerSyncMessage syncMessage = (GameServerSyncMessage) message;
-            currentState.synchronise(syncMessage.getStateToSync());
-            changeableState.synchronise(currentState);
+        try {
+            transmitter.sendMessage(new GameClientRegisterMessage(cData));
+        } catch (InterruptedException e) {
+            stopGame();
         }
-        else if (message.getType() == MessageType.GAME_SERVER_DENIED) {
-            //GameServerActionDeniedMessage deniedMessage = (GameServerActionDeniedMessage) message;
-            transmitter.sendMessage(new GameClientUnregisterMessage(cData));
+
+        Message message;
+        try {
+            message = transmitter.receiveMessage();
+        } catch (InterruptedException e) {
+            return;
+        }
+        if (message.getType() != MessageType.GAME_SERVER_ACCEPTED) {
+            try {
+                transmitter.sendMessage(new GameClientUnregisterMessage(cData));
+            } catch (InterruptedException ignored) { }
             stopGame();
             return;
         }
-        transmitter.sendMessage(new GameClientWaitMessage(cData));
+        try {
+            transmitter.sendMessage(new GameClientWaitMessage(cData));
+        } catch (InterruptedException e) {
+            stopGame();
+        }
     }
 
     @Override
     public boolean isGameRunning() {
-        return false;
+        return gameRunning;
     }
 
     @Override
@@ -64,30 +79,87 @@ public class DefaultClientGame implements Game.ClientGame {
 
     @Override
     public synchronized void finaliseGame() {
-        transmitter.sendMessage(new GameClientUnregisterMessage(cData));
+        try {
+            transmitter.sendMessage(new GameClientUnregisterMessage(cData));
+        } catch (InterruptedException ignored) { }
+    }
+
+    protected void handleWin() {
+        if (currentState.signalWin()) {
+            try {
+                transmitter.sendMessage(new GameServerRestart(cData));
+            } catch (InterruptedException e) {
+                stopGame();
+                Thread.currentThread().interrupt();
+            }
+        }
+    }
+
+    protected void handleLose() {
+        if (currentState.signalLose()) {
+            try {
+                transmitter.sendMessage(new GameServerRestart(cData));
+            } catch (InterruptedException e) {
+                stopGame();
+                Thread.currentThread().interrupt();
+            }
+        }
+    }
+
+    protected void handleStalemate() {
+        if (currentState.signalStalemate()) {
+            try {
+                transmitter.sendMessage(new GameServerRestart(cData));
+            } catch (InterruptedException e) {
+                stopGame();
+                Thread.currentThread().interrupt();
+            }
+        }
     }
 
     @Override
     public void gameCycleIteration() {
-        Message message = transmitter.receiveMessage();
+        Message message;
+        try {
+            message = transmitter.receiveMessage();
+        } catch (InterruptedException ignored) {
+            stopGame();
+            Thread.currentThread().interrupt();
+            return;
+        }
 
-        if (message.getType() == MessageType.GAME_SERVER_SYNC ) {
+        if (message.getType() == MessageType.GAME_SERVER_SYNC) {
             GameServerSyncMessage syncMessage = (GameServerSyncMessage) message;
             currentState.synchronise(syncMessage.getStateToSync());
-            if (currentState.getCurrentActor().getRegistered() == cData) {
-                changeableState.getCurrentActor().act(changeableState);
-                transmitter.sendMessage(new GameClientSyncMessage(cData, changeableState));
-            }
-            else {
+            currentState.updateSave(stateSave);
+            try {
                 transmitter.sendMessage(new GameClientWaitMessage(cData));
+            } catch (InterruptedException e) {
+                stopGame();
+                Thread.currentThread().interrupt();
             }
+//            }
         }
         else if (message.getType() == MessageType.GAME_SERVER_SIGNAL) {
-            changeableState.getCurrentActor().act(changeableState);
-            transmitter.sendMessage(new GameClientSyncMessage(cData, changeableState));
+            currentState.getCurrentActor().act(currentState);
+            try {
+                transmitter.sendMessage(new GameClientSyncMessage(cData, currentState));
+            } catch (InterruptedException e) {
+                stopGame();
+                Thread.currentThread().interrupt();
+            }
+        }
+        else if (message.getType() == MessageType.GAME_CLIENT_WIN) {
+            Platform.runLater(this::handleWin);
+        }
+        else if (message.getType() == MessageType.GAME_CLIENT_LOSE) {
+            Platform.runLater(this::handleLose);
+        }
+        else if (message.getType() == MessageType.GAME_CLIENT_STALEMATE) {
+            Platform.runLater(this::handleStalemate);
         }
         else if (message.getType() == MessageType.GAME_SERVER_DENIED) {
-            changeableState.synchronise(currentState);
+            currentState.restoreFrom(stateSave);
         }
     }
 }

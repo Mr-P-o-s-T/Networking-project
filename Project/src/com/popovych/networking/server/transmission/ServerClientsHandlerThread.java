@@ -1,5 +1,7 @@
 package com.popovych.networking.server.transmission;
 
+import com.popovych.game.interfaces.ClientDataContainer;
+import com.popovych.networking.abstracts.Indexer;
 import com.popovych.networking.abstracts.threads.NetRunnable;
 import com.popovych.networking.abstracts.threads.ThreadSubgroupMaster;
 import com.popovych.networking.data.ServerData;
@@ -9,7 +11,7 @@ import com.popovych.networking.server.ServerWorkerThreadArguments;
 import com.popovych.networking.server.enumerations.ServerWorkerThreadType;
 import com.popovych.networking.server.transmission.args.ServerClientTransmitterThreadArguments;
 import com.popovych.networking.server.transmission.args.ServerClientsHandlerThreadArguments;
-import com.popovych.networking.statics.Naming;
+import com.popovych.statics.Naming;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -21,11 +23,20 @@ public class ServerClientsHandlerThread extends ThreadSubgroupMaster {
 
     protected MessageQueueProvider provider;
 
-    public ServerClientsHandlerThread(ThreadGroup group, ServerClientsHandlerThreadArguments args) {
-        super(Naming.Templates.serverThread, Naming.Descriptions.clientsHandlerThread, group,
-                Naming.Groups.clientHandler);
+    protected static Indexer<Integer> indexer;
+    protected ClientDataContainer container;
+
+    public ServerClientsHandlerThread(ThreadGroup group, Indexer<Integer> indexer, Arguments args) {
+        super(args, Naming.Templates.serverThread, Naming.Descriptions.clientsHandlerThread, group,
+                Naming.Groups.clientHandler, (ServerClientsHandlerThread.indexer = indexer), false);
+    }
+
+    @Override
+    protected void processArgs(Arguments arguments) {
+        ServerClientsHandlerThreadArguments args = (ServerClientsHandlerThreadArguments) arguments;
         sData = args.getSData();
         provider = args.getMessageQueueProvider();
+        container = args.getClientDataContainer();
     }
 
     @Override
@@ -49,8 +60,7 @@ public class ServerClientsHandlerThread extends ThreadSubgroupMaster {
         }
 
         try {
-            SpawnWorker(new ServerClientTransmitterThreadArguments(client, provider.getInputMessageQueue(),
-                    provider.getOutputMessageQueue()));
+            SpawnWorker(new ServerClientTransmitterThreadArguments(client, provider, container));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -70,7 +80,7 @@ public class ServerClientsHandlerThread extends ThreadSubgroupMaster {
         ServerWorkerThreadType newThreadType = ((ServerWorkerThreadArguments)workerArgs).getWorkerType();
 
         if (newThreadType == ServerWorkerThreadType.CLIENT_TRANSMITTER) {
-            return new ServerClientTransmitterThread(group, (ServerClientTransmitterThreadArguments) workerArgs);
+            return new ServerClientTransmitterThread(group, indexer, workerArgs);
         }
         else {
             throw new Exception();
@@ -78,7 +88,7 @@ public class ServerClientsHandlerThread extends ThreadSubgroupMaster {
     }
 
     @Override
-    public void SpawnWorkerMemo(Arguments workerArgs) throws Exception {
+    public void SpawnWorkerMemo(Arguments workerArgs) {
 
     }
 }

@@ -6,12 +6,20 @@ import com.popovych.networking.interfaces.message.InputMessageQueue;
 import com.popovych.networking.interfaces.message.OutputMessageQueue;
 
 public class ServerGameData extends GameTransmitterGameData {
+    protected InputMessageQueue inputMessageQueue;
 
     public ServerGameData() {
-        super(new ClientMessageQueue(), new ClientMessageQueue());
+        this(new ClientMessageQueue(), new ClientMessageQueue());
     }
 
-    public ServerGameData(InputMessageQueue inputMessageQueue, OutputMessageQueue outputMessageQueue) {
-        super(inputMessageQueue, outputMessageQueue);
+    protected ServerGameData(InputMessageQueue inputMessageQueue, OutputMessageQueue outputMessageQueue) {
+        super(outputMessageQueue);
+        this.inputMessageQueue = inputMessageQueue;
+    }
+
+    public InputMessageQueue getInputMessageQueue() {
+        synchronized (inputMessageQueue) {
+            return inputMessageQueue;
+        }
     }
 }

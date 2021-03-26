@@ -33,7 +33,7 @@ public class ServerCoverThreadArguments extends ServerWorkerThreadArguments {
     }
 
     public ServerCoverThreadArguments(ServerData sData, ServerDatabaseData sdbData) {
-        super(ServerWorkerThreadType.SERVER_UNCOVER);
+        super(ServerWorkerThreadType.SERVER_COVER);
         args.add(sData);
         args.add(sdbData);
     }

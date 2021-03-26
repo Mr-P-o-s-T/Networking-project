@@ -10,9 +10,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.popovych.statics.Naming.Constants.*;
+
 public class DefaultActorSpawner implements ActorSpawner {
-    ActorSpawnInfo spawnInfoPlayer1 = new ActorSpawnInfo(DefaultActor.class, new ActorArguments());
-    ActorSpawnInfo spawnInfoPlayer2 = new ActorSpawnInfo(DefaultActor.class, new ActorArguments());
+    ActorSpawnInfo spawnInfoPlayer1 = new ActorSpawnInfo(DefaultActor.class, new ActorArguments(XMark));
+    ActorSpawnInfo spawnInfoPlayer2 = new ActorSpawnInfo(DefaultActor.class, new ActorArguments(OMark));
 
     public DefaultActorSpawner() {
     }

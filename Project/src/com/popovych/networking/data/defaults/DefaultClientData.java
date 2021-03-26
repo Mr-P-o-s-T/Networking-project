@@ -2,7 +2,7 @@ package com.popovych.networking.data.defaults;
 
 import com.popovych.networking.abstracts.Indexer;
 import com.popovych.networking.data.ClientData;
-import com.popovych.networking.statics.Naming;
+import com.popovych.statics.Naming;
 
 import java.net.UnknownHostException;
 
@@ -22,6 +22,12 @@ public class DefaultClientData extends ClientData {
     protected static synchronized Indexer<Integer> getIndexer() {
         if (gamerIndexer == null) {
             return gamerIndexer = new Indexer<>() {
+
+                @Override
+                protected void initIndex() {
+                    index = 0;
+                }
+
                 @Override
                 protected void updateIndex() {
                     index++;

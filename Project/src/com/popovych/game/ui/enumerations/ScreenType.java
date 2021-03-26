@@ -1,6 +1,6 @@
 package com.popovych.game.ui.enumerations;
 
-import com.popovych.networking.statics.Naming;
+import com.popovych.statics.Naming;
 
 public enum ScreenType {
     NONE,

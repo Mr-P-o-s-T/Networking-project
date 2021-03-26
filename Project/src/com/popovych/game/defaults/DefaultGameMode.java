@@ -14,10 +14,6 @@ public class DefaultGameMode implements GameMode {
     protected GameState sharedState = null;
     protected ActorSpawner spawner;
 
-    public DefaultGameMode() {
-        this(new GameModeArguments(DefaultGameState.class, new GameStateArguments(), new DefaultActorSpawner()));
-    }
-
     public DefaultGameMode(GameModeArguments args) {
         this.gameStateClass = args.getGameStateClass();
         this.gameStateArgs = args.getGameStateArguments();
@@ -32,13 +28,14 @@ public class DefaultGameMode implements GameMode {
     @Override
     public void syncGameState(GameState stateToSync) {
         sharedState.synchronise(stateToSync);
+        sharedState.update();
     }
 
     @Override
     public GameState getGameState() {
         if (sharedState == null) {
             try {
-                sharedState = gameStateClass.getConstructor(GameStateArguments.class).newInstance(gameStateArgs);
+                sharedState = gameStateClass.getConstructor(GameStateArguments.class, Boolean.TYPE).newInstance(gameStateArgs, false);
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                 e.printStackTrace();
             }

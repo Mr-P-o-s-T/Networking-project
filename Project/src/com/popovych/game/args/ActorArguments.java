@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 public class ActorArguments extends DefaultArgumentsImplementation {
     private enum ArgsType {
-        ;
+        ACTOR_MARK(0);
 
         private final int index;
         private final int autoinc;
@@ -29,7 +29,12 @@ public class ActorArguments extends DefaultArgumentsImplementation {
         }
     }
 
-    public ActorArguments() {
+    public ActorArguments(char mark) {
         super(new ArrayList<>());
+        args.add(mark);
+    }
+
+    public char getMark() {
+        return (char) args.get(ArgsType.ACTOR_MARK.getIndex());
     }
 }

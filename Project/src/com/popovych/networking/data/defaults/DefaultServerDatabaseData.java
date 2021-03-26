@@ -1,7 +1,7 @@
 package com.popovych.networking.data.defaults;
 
 import com.popovych.networking.data.ServerDatabaseData;
-import com.popovych.networking.statics.Naming;
+import com.popovych.statics.Naming;
 
 import java.net.UnknownHostException;
 

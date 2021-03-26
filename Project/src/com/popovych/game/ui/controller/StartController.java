@@ -47,4 +47,9 @@ public class StartController extends DefaultController {
         Stage mainWindowStage = (Stage) exitBtn.getScene().getWindow();
         mainWindowStage.close();
     }
+
+    @Override
+    public void reset() {
+
+    }
 }

@@ -1,10 +1,10 @@
-package com.popovych.networking.statics;
+package com.popovych.statics;
 
 public class Naming {
     public static class Templates {
         public static final String clientThread = "Client thread executor # %d: %s";
         public static final String serverThread = "Server thread executor # %d: %s";
-        public static final String databaseThread = "Server thread executor # %d: %s";
+        public static final String databaseThread = "Database thread executor # %d: %s";
         public static final String gamerName = "gamer%d";
         public static final String serverName = "server%d";
 
@@ -46,6 +46,13 @@ public class Naming {
         public static final int defaultServerPort = 1489;
         public static final int defaultDatabaseCPort = 1490;
         public static final int getDefaultDatabaseSPort = 1491;
+
+        public static final int minimalFieldSize = 3;
+        public static final int maximalFieldSize = 10;
+
+        public static final char XMark = 'X';
+        public static final char OMark = 'O';
+        public static final char Stalemate = 'S';
     }
 
     public static class FXMLData {
@@ -54,5 +61,6 @@ public class Naming {
         public static final String defaultServerPickScreenFilename = "ServerPickScreen.fxml";
         public static final String defaultServerCreateScreenFilename = "ServerCreateScreen.fxml";
         public static final String defaultGameScreenFilename = "GameScreen.fxml";
+        public static final String waitingStatus = "Waiting other players to connect...";
     }
 }

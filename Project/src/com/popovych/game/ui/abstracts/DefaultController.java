@@ -5,7 +5,7 @@ import com.popovych.game.ui.ServerPickScreen;
 import com.popovych.game.ui.StartScreen;
 import com.popovych.game.ui.GameScreen;
 import com.popovych.game.ui.enumerations.ScreenType;
-import com.popovych.networking.statics.Naming;
+import com.popovych.statics.Naming;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 
@@ -64,4 +64,6 @@ public abstract class DefaultController implements Initializable {
             case GAME -> getGameScreen();
         };
     }
+
+    public abstract void reset();
 }

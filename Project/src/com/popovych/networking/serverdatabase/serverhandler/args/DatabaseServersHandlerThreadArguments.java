@@ -10,7 +10,7 @@ public class DatabaseServersHandlerThreadArguments extends DatabaseWorkerThreadA
     private enum ArgsType {
         THREAD_TYPE(0),
         SERVER_DATABASE(THREAD_TYPE),
-        SERVERS_SOCKET(THREAD_TYPE);
+        SERVERS_SOCKET(SERVER_DATABASE);
 
         private final int index;
         private final int autoinc;
@@ -34,7 +34,7 @@ public class DatabaseServersHandlerThreadArguments extends DatabaseWorkerThreadA
     }
 
     public DatabaseServersHandlerThreadArguments(ServerDatabase serverDatabase, ServerSocket serversSocket) {
-        super(DatabaseWorkerThreadType.CLIENTS_HANDLER);
+        super(DatabaseWorkerThreadType.SERVERS_HANDLER);
         args.add(serverDatabase);
         args.add(serversSocket);
     }

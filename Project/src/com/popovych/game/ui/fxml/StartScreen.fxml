@@ -12,5 +12,5 @@
    </Label>
     <Button fx:id="newServerBtn" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" onAction="#newServerAction" prefWidth="150.0" text="Start New Server" />
     <Button fx:id="connectServerBtn" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onAction="#connectServerAction" prefWidth="150.0" text="Connect To Other Server" />
-    <Button fx:id="exitBtn" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onAction="#exitAction" prefWidth="150.0" text="Exit" />
+    <Button fx:id="exitBtn" cancelButton="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onAction="#exitAction" prefWidth="150.0" text="Exit" />
 </VBox>
